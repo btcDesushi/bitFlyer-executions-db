@@ -6,6 +6,7 @@ const mongodbUrl = 'mongodb://localhost:27020/bitflyer';
 let dataCount = 0 ;
 let apiCount = 1;
 let minimumId = 999999999999;
+let indbCount = 0;
 
 function sleep(time) {
     return new Promise((resolve, reject) => {
@@ -38,6 +39,7 @@ function sleep(time) {
 
     console.log('過去約定データをDBに追加...');
     while( executions.length != 0 ) {
+        indbCount = 0;
         for(let k in executions) {
             if( executions[k].id < minimumId) {
                 minimumId = executions[k].id;
@@ -55,7 +57,13 @@ function sleep(time) {
                 dataCount++;
             } else {
                 console.log('過去約定データ重複スキップ');
+                indbCount++;
             }
+        }
+        if(indbCount == executions.length) {
+            console.log('新規取得データが全て取得済みだったため終了します');
+            db.close();
+            process.exit();
         }
         console.log('DB保存データ数：' + dataCount);
 
