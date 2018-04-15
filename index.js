@@ -34,7 +34,7 @@ function sleep(time) {
         console.log('BF API呼び出しエラー');
         db.close();
         process.exit();
-    });;
+    });
     console.log(executions.length);
 
     console.log('過去約定データをDBに追加...');
@@ -70,17 +70,17 @@ function sleep(time) {
         console.log(minimumId);
         let error = false
         do {
-            executions = await bitflyer.executions({product_code: 'FX_BTC_JPY', count: 500, before: minimumId}).catch(function(err){
+            executions = await bitflyer.executions({product_code: 'FX_BTC_JPY', count: 500, before: minimumId}).catch(async function(err){
                 console.error(err);
                 console.log('BF API呼び出しエラー');
                 error = true
-                sleep(10000);
+                await sleep(10000);
             })
         } while(error)
         apiCount++;
         console.log('API呼び出し回数：' + apiCount);
         console.log('取得データ数：' + executions.length);
-        sleep(500);
+        await sleep(500);
     }
     db.close();
 })();
